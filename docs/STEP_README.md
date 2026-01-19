@@ -160,35 +160,63 @@ second-app/
 - [ ] Rename any uppercase folder names to lowercase to ensure cross-platform compatibility.
 - [ ] Add a basic navigation link from the home page to the new about page to test accessibility.
 
-
 <br>
 
+## 🔧 90. Lesson 90 — *Navigating Between Pages - Wrong & Right Solution*
 
-## Lesson 090: Navigating Between Pages - Wrong & Right Solution
+### 🧠 90.1 Context:
 
-### 1. Creating a link to **`/about`** page:
+**Client-side Navigation vs. Server-side Reloads** is a fundamental concept in modern web frameworks. In traditional web applications, using a standard `<a href="...">` tag triggers a full page reload, causing the entire application state to be lost and the browser to re-download all resources.
 
-```js
+Next.js provides the **`Link` component** to enable **Client-side Navigation**. This allows the application to transition between pages without a full refresh, providing a faster and smoother "Single Page Application" (SPA) experience.
+
+*   **When it occurs/is used**: Used whenever you need to navigate between internal pages of your Next.js application.
+*   **Examples from the project**:
+    *   [app/page.js](file:///Users/luismedina/Desktop/WORKSPACE/NEXT/second-app/app/page.js): Navigating to `/about`, `/meals`, and `/community`.
+*   **Advantages**:
+    *   **Seamless Transitions**: No flickering or white screens between pages.
+    *   **Faster Loading**: Only the necessary page data is fetched, often prefetched automatically.
+    *   **State Retention**: React state is preserved (unless the user manually refreshes).
+*   **Disadvantages**:
+    *   **Client JavaScript**: Requires the React runtime to be active (Next.js handles this).
+*   **When to consider alternatives**: Use standard `<a>` tags for external links or file downloads.
+
+
+### ⚙️ 90.2 Updating code/theory according the context:
+
+**Section Summary**
+This section compares the standard HTML navigation method with the optimized Next.js approach. It demonstrates how to transition from full-page reloads to smooth, client-side transitions using the `Link` component.
+
+#### 90.2.1 Adding `<a href="/about">About Us</a>` tag for `About:`
+**Subsection Summary**
+*   Uses a standard HTML anchor tag for navigation.
+*   Highlights the "Wrong" solution for internal links.
+*   Identifies the drawback: triggers a full browser refresh on every click.
+
+```jsx
 export default function Home() {
-  console.log("Executing...");
   return (
     <main>
       <img src="/logo.png" alt="A server surrounded by magic sparkles." />
       <h1>Welcome to this NextJS Course!</h1>
       <p>🔥 Let&apos;s get started! 🔥</p>
       <p>
-        <a href="/about">About us</a>
+        <a href="/about">About us</a> {/* 👈🏽 ✅ (1) Reload the page */}
       </p>
     </main>
   );
 }
 ```
+![](../img/section03-lecture090-001.png)
 
-> this apporach has a flaw due to a refresh page downloaded from the backend.
+#### 90.2.2 Adding/Using **`Link`** `next` component:
+**Subsection Summary**
+*   Imports the `Link` component from `'next/link'`.
+*   Replaces the anchor tag to enable "Client-side Navigation".
+*   Achieves the "Right" solution: instantaneous transitions without refreshing the entire page.
 
-### 2. Using **`Link`** component:
-```js
-import Link from "next/link";  // 👈🏽
+```jsx
+import Link from "next/link";  // 👈🏽 ✅ (2)
 export default function Home() {
   return (
     <main>
@@ -196,12 +224,29 @@ export default function Home() {
       <h1>Welcome to this NextJS Course!</h1>
       <p>🔥 Let&apos;s get started! 🔥</p>
       <p>
-        <Link href="/about">About us</Link>  {/* 👈🏽 */}
+        {/* <a href="/about">About us</a> */ }  {/* 👈🏽 ✅ (1) Reload the page */}
+        <Link href="/about">About us</Link>  {/* 👈🏽 ✅ (2) */}
       </p>
     </main>
   );
 }
 ```
+
+### 🐞 90.3 Issues:
+
+| Issue | Status | Log/Error |
+|---|---|---|
+| **Full Page Reload** | ✅ Fixed | Using `<a>` tags causes the browser to download the entire app again, which is inefficient. |
+| **State Reset** | ✅ Fixed | Anchor tags wipe out existing React state, which is solved by using `<Link>`. |
+
+### 🧱 90.4 Pending Fixes (TODO)
+
+- [x] Integrate `Link` component in the main entry point.
+- [ ] Review other pages to ensure no legacy `<a>` tags are used for internal routing.
+- [ ] Observe the "Network" tab in DevTools to confirm that navigation is not triggering full document downloads.
+
+
+<br>
 
 ## Lecture 091: Working with Pages & Layouts
 
