@@ -245,12 +245,42 @@ export default function Home() {
 - [ ] Review other pages to ensure no legacy `<a>` tags are used for internal routing.
 - [ ] Observe the "Network" tab in DevTools to confirm that navigation is not triggering full document downloads.
 
-
 <br>
 
-## Lecture 091: Working with Pages & Layouts
+## 🔧 91. Lesson 091 — *Working with Pages & Layouts*
 
-Layout page is a wrapper around one or more pages.
+### 🧠 91.1 Context:
+
+**Next.js Pages and Layouts** are the building blocks of the App Router's UI. While **Pages** represent the unique content of a specific route, **Layouts** are used to define a shared UI that wraps one or more pages and even other nested layouts.
+
+The **Root Layout** (`app/layout.js`) is a special, top-level layout that is mandatory for every Next.js application. It is the first file to be rendered when a user visits any page in the app.
+
+*   **When it occurs/is used**:
+    *   **Pages**: Every time you want to define the core content for a URL segment.
+    *   **Layouts**: When you have UI elements (like headers, sidebars, or footers) that should remain visible and maintain state across different routes.
+*   **Examples from the project**:
+    *   [app/layout.js](file:///Users/luismedina/Desktop/WORKSPACE/NEXT/second-app/app/layout.js): The root layout that establishes the HTML structure and wraps all pages.
+    *   [app/page.js](file:///Users/luismedina/Desktop/WORKSPACE/NEXT/second-app/app/page.js): The main page content that gets injected into the root layout's `{children}` prop.
+*   **Advantages**:
+    *   **Shared UI**: Easily define common elements once.
+    *   **Performance**: Layouts do not re-render when navigating between sibling pages, preserving state and scroll position.
+    *   **Metadata**: Define default SEO metadata at the root or override it in specific segments.
+*   **Disadvantages**:
+    *   **Complexity**: Deeply nested layouts can be harder to manage and debug.
+    *   **Mandatory Tags**: The Root Layout *must* include `html` and `body` tags, which can be a source of errors if omitted.
+*   **When to consider alternatives**: Use **Templates** (`template.js`) instead of layouts if you explicitly need the component to re-mount and reset state on every navigation.
+
+
+### ⚙️ 91.2 Updating code/theory according the context:
+
+**Section Summary**
+This section explains how Layouts function as wrappers in Next.js. It demonstrates the structural requirement of the Root Layout and how it uses the `children` prop to dynamically render pages within the shared shell.
+
+#### 91.2.1 Layout page is a `wrapper` around one or more pages.
+**Subsection Summary**
+*   Illustrates the file system hierarchy where `layout.js` sits at the top level.
+*   Shows that `layout.js` acts as a container for all pages in the same or nested directories.
+*   Highlights that global styles and metadata are typically managed here.
 ```
 second-app/
 ├── app/
@@ -258,7 +288,7 @@ second-app/
 │   │   └── page.js         
 │   ├── globals.css
 │   ├── icon.png
-│   ├── layout.js. 👈🏽👈🏽
+│   ├── layout.js     # 👈🏽 ✅
 │   └── page.js
 ├── public/
 │   └── logo.png
@@ -271,8 +301,17 @@ second-app/
 ├── README.md
 └── tsconfig.json
 ```
-Its code:
-```js
+
+![](../img/section03-lecture091-001.png)
+
+#### 91.2.2 `layout.jsx` code:
+**Subsection Summary**
+*   Defines the `RootLayout` component which receives a `children` prop.
+*   Includes the necessary `<html>` and `<body>` tags for the entire application.
+*   Exports a `metadata` object to define global SEO settings like `title` and `description`.
+*   Imports `globals.css` to apply styles across all pages.
+```jsx
+/* app/layout.js */
 import "./globals.css";
 export const metadata = {
   title: "NextJS Course App",
@@ -286,6 +325,27 @@ export default function RootLayout({ children }) {
   );
 }
 ```
+
+> There could be nested layout.
+
+### 🐞 91.3 Issues:
+
+| Issue | Status | Log/Error |
+|---|---|---|
+| **Mandatory Root Tags** | ✅ Fixed | The Root Layout must contain `<html>` and `<body>` tags. If omitted, Next.js will encounter rendering issues. |
+| **Metadata Duplication** | ⚠️ Identified | Defining metadata in both `layout.js` and `page.js` can lead to overrides; care must be taken to manage this correctly. |
+| **Nested Layout Complexity** | ℹ️ Low Priority | As more routes are added, managing multiple `layout.js` files might become complex. |
+
+### 🧱 91.4 Pending Fixes (TODO)
+
+- [x] Implement the Root Layout with `html` and `body` tags.
+- [ ] Explore creating a nested layout for a specific sub-route (e.g., `/blog`).
+- [ ] Verify that global styles are correctly imported in the `layout.js`.
+
+
+
+<br>
+
 
 ## Lecture 092: Reserved File Names, Custom Components & How To Organize A NextJS Project
 
