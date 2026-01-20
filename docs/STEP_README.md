@@ -487,6 +487,92 @@ second-app/
 - [ ] Audit the `app` directory to ensure no non-routing files are accidentally using reserved names.
 
 
+<br>
+
+## 🔧 93. Lesson 093 — *Reserved Filenames*
+
+### 🧠 93.1 Context:
+
+**Next.js Reserved Filenames** are special filenames within the `app` directory that Next.js uses to define the behavior of routes and UI. These specific names, such as `page.js`, `layout.js`, and `loading.js`, are part of the "convention over configuration" philosophy, allowing the framework to automatically handle complex routing and UI patterns without manual registration.
+
+*   **When it occurs/is used**: Every time you create a new route segment or need to handle specific UI states (like loading or errors) within the App Router's file system.
+*   **Examples from the project**:
+    *   `app/page.js`: The root UI for the application.
+    *   `app/layout.js`: The shared UI shell that wraps all pages.
+    *   `app/meals/page.js`: The UI for the `/meals` route.
+*   **Advantages**:
+    *   **Standardization**: Provides a consistent structure across all Next.js projects.
+    *   **Feature Richness**: Enables complex features like nested layouts, error boundaries, and streaming loading states out-of-the-box.
+    *   **Clarity**: Makes it immediately obvious what each file's responsibility is just by its name.
+*   **Disadvantages**:
+    *   **Naming Constraints**: You cannot use these specific names for your own custom components if they are meant to be exported normally or used differently within the `app` directory.
+    *   **Learning Curve**: New developers must memorize the purpose of each reserved name.
+*   **When to consider alternatives**: For non-routing logic or shared UI components that aren't meant to be routes or specific UI boundaries, use custom filenames (e.g., `header.jsx`) and store them in a `components` folder or colocate them without using reserved names.
+
+
+
+### ⚙️ 93.2 Updating code/theory according the context:
+
+**Section Summary**
+This section details the critical role of reserved filenames in Next.js. It lists the primary files used to define pages, layouts, error handling, and data fetching states, emphasizing that these conventions only apply within the `app` directory.
+
+
+#### 93.2.1 Next.js Reserved Filenames List:
+**Subsection Summary**
+*   Identifies where reserved filenames apply (inside `app/`).
+*   Provides a breakdown of common reserved files (`page`, `layout`, `not-found`, `error`, `loading`, `route`).
+*   Explains the transition from JSX-based routes to data-driven API routes using `route.js`.
+
+
+As you already learned, there are some `reserved filenames` when working with `NextJS`.
+
+**Important**: These filenames are only reserved when creating them inside of the `app/ folder` (or any `subfolder`). Outside of the **`app/`** folder, these filenames are not treated in any special way.
+
+Here's a list of reserved filenames in NextJS - you'll, of course, learn about the important ones throughout this section:
+
+* `page.js` => Create a new page (e.g., `app/about/page.js` creates a `<your-domain>/about` page)
+* `layout.js` => Create a new layout that wraps sibling and nested pages
+* `not-found.js` => Fallback page for "Not Found" errors (thrown by sibling or nested pages or layouts)
+* `error.js` => Fallback page for other errors (thrown by sibling pages or nested pages or layouts)
+* `loading.js` => Fallback page which is shown whilst sibling or nested pages (or layouts) are fetching data
+* `route.js` => Allows you to create an API route (i.e., a page which does NOT return JSX code but instead data, e.g., in the JSON format)
+
+You also find a list with all supported filenames & detailed explanations in the official docs: [reference link](https://nextjs.org/docs/app/api-reference/file-conventions)
+
+
+### 🐞 93.3 Issues:
+
+| Issue | Status | Log/Error |
+|---|---|---|
+| **Colocation Confusion** | ✅ Explained | Files with non-reserved names inside the `app` folder (e.g., `utils.js`) will not become routes, but they can still be imported. |
+| **Route.js Conflict** | ⚠️ Identified | A `route.js` and a `page.js` cannot exist in the same route segment folder. If both are present, Next.js will throw an error or behave unpredictably. |
+| **Case Sensitivity** | ℹ️ Low Priority | While the filenames themselves are strictly lowercase (`page.js`, not `Page.js`), inconsistency in folder names can lead to cross-platform routing issues. |
+
+### 🧱 93.4 Pending Fixes (TODO)
+
+- [x] Document the list of reserved filenames and their primary functions.
+- [ ] Review the `app` folder to ensure no `page.js` and `route.js` conflicts exist in the same directory.
+- [ ] Add a custom `not-found.js` to a specific route (like `/meals`) to test nested error handling.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 <br>
 <br>
