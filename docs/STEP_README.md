@@ -556,6 +556,231 @@ You also find a list with all supported filenames & detailed explanations in the
 
 
 
+<br>
+
+## 🔧 94. Lesson 094 - *Configuring Dynamic Routes & Using Route Parameters*
+
+### 🧠 94.1 Context:
+
+**Dynamic Routes** are a powerful feature in Next.js that allow you to define route segments that match any value. By wrapping a folder name in square brackets (e.g., `[slug]`), you create a **Dynamic Segment**. This value is then passed to the page component via the `params` prop, enabling the creation of template-based pages for content like blog posts, products, or user profiles.
+
+*   **When it occurs/is used**: Used when you have many pages with the same layout but different content (e.g., individual blog posts or product details) and you want to avoid manually creating a folder for each one.
+*   **Examples from the project**:
+    *   `app/blog/[slug]/page.js`: Matches any route like `/blog/my-first-post` or `/blog/learning-nextjs`.
+*   **Advantages**:
+    *   **Scalability**: Handle an infinite number of pages with a single file.
+    *   **Maintainability**: Centralize the logic and design for all dynamic pages in one place.
+    *   **Dynamic Data**: Directly use the URL parameter to fetch specific data from an API or database.
+*   **Disadvantages**:
+    *   **Ambiguity**: Without proper validation, the dynamic route matches *any* string, which might lead to "ghost" pages if not handled correctly.
+    *   **Complexity**: Requires understanding how to extract and use the `params` object correctly.
+*   **When to consider alternatives**: Use **Catch-all Segments** (`[...slug]`) if you need to match multiple nested segments (e.g., `/blog/2024/01/post-name`).
+
+
+
+### ⚙️ 94.2 Updating code/theory according the context:
+
+**Section Summary**
+This section walks through the evolution from static routing to dynamic routing. It identifies the limitations of manually creating folders for every piece of content and introduces the `[slug]` convention as a scalable solution for template-based pages.
+
+
+#### 94.2.1 Adding `/blog` route:
+**Subsection Summary**
+*   Creates a standard static route for the blog overview.
+*   Serves as the parent directory for subsequent dynamic post routes.
+
+```jsx
+/* app/blog/page.js */
+import Link from "next/link";
+
+export default function BlogPage(){
+  return (
+    <main>
+      <h1>The Blog</h1>
+    </main>
+  )
+}
+```
+
+![blog route](../img/section03-lecture094-001.png)
+
+#### 94.2.2 In case need to support routes like `/blog/first-posts`, `/blog/second-posts`, and *many other* similar ones:
+**Subsection Summary**
+*   Visualizes the "naive" approach of creating manual folders for setiap post.
+*   Highlights the scalability and maintenance problems of this pattern.
+*   Sets the stage for why dynamic segments are necessary.
+
+
+* Issue: this is not scalable neither maintainable
+```
+second-app/
+├── app/
+│   ├── about/
+│   │   └── page.js
+│   ├── blog/
+│   │   ├── first-post/                             # 👈🏽 ✅
+│   │   │   └── page.js
+│   │   ├── second-post/                            # 👈🏽 ✅
+│   │   │   └── page.js
+│   │   ├── ... and many more (added dynamically)   # 👈🏽 ✅ 🤔 🔥 ⚠️
+│   │   └── page.js                                 # 👈🏽 ✅
+│   ├── globals.css
+│   ├── icon.png
+│   ├── layout.js
+│   └── page.js
+├── components/       
+│   └── header.jsx
+├── public/
+│   └── logo.png
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── package-lock.json
+├── pnpm-lock.yaml
+├── yarn.lock
+├── README.md
+├── STEP_README.md
+└── tsconfig.json
+```
+
+
+#### 94.2.3 Fixing the previous issue, adding `/blog/[slug]/page.js` route:
+**Subsection Summary**
+*   Introduces the square bracket `[slug]` folder convention.
+*   Shows how this single folder replaces the need for multiple static post folders.
+*   Demonstrates linking from the main blog page to these dynamic segments.
+
+
+```
+second-app/
+├── app/
+│   ├── about/
+│   │   └── page.js
+│   ├── blog/
+│   │   ├── [slug]/         # 👈🏽 ✅
+│   │   │   └── page.js     # 👈🏽 ✅
+│   │   └── page.js
+│   ├── globals.css
+│   ├── icon.png
+│   ├── layout.js
+│   └── page.js
+├── components/       
+│   └── header.jsx
+├── public/
+│   └── logo.png
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── package-lock.json
+├── pnpm-lock.yaml
+├── yarn.lock
+├── README.md
+├── STEP_README.md
+└── tsconfig.json
+```
+
+1. How the `blog` route changed:
+```tsx
+/* app/blog/page.js */
+import Link from "next/link";
+
+export default function BlogPage(){
+  return (
+    <main>
+      <h1>The Blog</h1>
+      <p><Link href="/blog/first-post">First Post</Link></p>
+      <p><Link href="/blog/second-post">Second Post</Link></p>
+    </main>
+  )
+}
+```
+
+![both posts links from blog route](../img/section03-lecture094-004.png)
+
+2. How the `[slug]` route changed:
+
+```tsx
+/* app/blog/[slug]/page.js */
+export default function BlogPostPage(){
+  return (
+    <main>
+      <h1>Blog Post</h1>
+    </main>
+  )
+}
+```
+* first post route:
+
+![first post route](../img/section03-lecture094-002.png)
+
+* second post route
+
+![second post route](../img/section03-lecture094-003.png)
+
+
+> 🔥 Issue 🤔:
+
+* User can add anything after `/blog/` as `/blog/anything` route.  
+
+#### 94.2.4 Using `params` as prop and `params.slug`:
+**Subsection Summary**
+*   Explains that Next.js automatically injects the `params` object into the page component.
+*   Shows how to access the specific dynamic segment (e.g., `params.slug`).
+*   Displays the slug directly on the page to verify the routing works as expected.
+
+```tsx
+/* app/blog/[slug]/page.js */
+export default function BlogPostPage({params}){   // 👈🏽 ✅
+  return (
+    <main>
+      <h1>Blog Post</h1>
+      <p>{params.slug}</p>                         {/* 👈🏽 ✅ */}
+    </main>
+  )
+}
+```
+
+![using params.slug as propa](../img/section03-lecture094-005.png)
+
+### 🐞 94.3 Issues:
+
+| Issue | Status | Log/Error |
+|---|---|---|
+| **Undefined Slugs** | ⚠️ Identified | Navigating to `/blog/` (without a slug) is handled by `app/blog/page.js`, but navigation to `/blog/anything/else` will 404 unless catch-all is used. |
+| **Invalid Content** | ⚠️ Identified | Any string after `/blog/` will render the dynamic page. We need logic to check if the slug is valid (e.g., exists in a database). |
+| **Route Overlapping** | ✅ Explained | If a folder `app/blog/new` exists, `/blog/new` will always render that specific folder instead of the `[slug]` page. |
+
+### 🧱 94.4 Pending Fixes (TODO)
+
+- [ ] Implement a lookup function to verify if the `slug` exists in our data source.
+- [ ] Add a "Not Found" trigger (using `notFound()`) for invalid slugs.
+- [ ] Migrate the current static blog links to a dynamic list generated from a data file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
