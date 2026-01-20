@@ -346,10 +346,39 @@ export default function RootLayout({ children }) {
 
 <br>
 
+## 🔧 92. Lesson 092 — *Reserved File Names, Custom Components & How To Organize A NextJS Project*
 
-## Lecture 092: Reserved File Names, Custom Components & How To Organize A NextJS Project
+### 🧠 92.1 Context:
 
-```txt
+**Next.js Reserved File Names** are specific filenames used by the App Router to define routing and UI behaviors. Files like `page.js`, `layout.js`, `loading.js`, and `error.js` have predefined roles. However, you can also create **Custom Components** to extract reusable UI logic. A key decision in Next.js is **Project Organization**: whether to colocate components inside the `app` directory or store them in a separate directory at the root.
+
+*   **When it occurs/is used**: Used whenever you need to break down large components into smaller, reusable ones and when deciding on the project's folder architecture.
+*   **Examples from the project**:
+    *   `components/header.jsx`: Extracted from `app/page.js` to be reused or to clean up the page content.
+*   **Advantages**:
+    *   **Modularity**: Easier to test and maintain isolated components.
+    *   **Clean Routes**: Keeps `page.js` files focused on layout and data, not complex UI structures.
+    *   **Flexibility**: Next.js allows components both inside and outside the `app` folder.
+*   **Disadvantages**:
+    *   **Import Overhead**: Requires management of import paths (relative vs. absolute aliases).
+    *   **Naming Collision Risk**: If custom components are inside `app`, they must NOT use reserved names unless intended.
+*   **When to consider alternatives**: Keep simple, non-reusable UI inside the `page.js` if extracting it doesn't significantly improve readability.
+
+
+
+### ⚙️ 92.2 Updating code/theory according the context:
+
+**Section Summary**
+This section explores the transition from mono-file pages to a component-based architecture. It demonstrates how to create custom components and compares two organizational patterns: keeping components inside the `app` directory for proximity versus using a dedicated root-level `components` folder for better separation of concerns.
+
+
+#### 92.2.1 Adding a new `header` component inside `app`:
+**Subsection Summary**
+*   Demonstrates creating a nested `components` folder within the `app` directory.
+*   Shows that files without reserved names inside `app` do not become routes.
+*   Establishes a "colocation" pattern where components live near the pages they serve.
+
+```
 second-app/
 ├── app/
 │   ├── about/
@@ -357,9 +386,9 @@ second-app/
 │   ├── globals.css
 │   ├── icon.png
 │   ├── layout.js
-│   └── page.js
-├── components/    👈🏽
-│   └── header.js  👈🏽
+│   ├── page.js
+│   └── components/       # 👈🏽 ✅
+│       └── header.jsx    # 👈🏽 ✅
 ├── public/
 │   └── logo.png
 ├── next-env.d.ts
@@ -373,8 +402,14 @@ second-app/
 └── tsconfig.json
 ```
 
-### **`header.js`**
-```js
+#### 92.2.2 Adding and Using **`header.jsx`**:
+**Subsection Summary**
+*   Defines the `Header` component with its own JSX structure.
+*   Demonstrates importing the component into `app/page.js`.
+*   Shows how custom components simplify the main page code by replacing blocks of HTML.
+
+```jsx
+/* .app/component/header.jsx */
 export default function Header(){
   return (
     <>
@@ -385,26 +420,71 @@ export default function Header(){
 }
 ```
 
+Meanwhile:
 
-### Meanwhile in **`./app/page.js`**:
-```js
-import Link from "next/link";
-import Header from './component/header'  // 👈🏽
+```jsx
+/* app/page.js */
+import Header from '@/components/header.jsx'    // 👈🏽 ✅
 export default function Home() {
   return (
     <main>
-      <Header />  {/* 👈🏽 */}
+      {/* 
+        <img src="/logo.png" alt="A server surrounded by magic sparkles." />
+        <h1>Welcome to this NextJS Course!</h1>
+      */}
+      <Header />
       <p>🔥 Let&apos;s get started! 🔥</p>
       <p>
-        <Link href="/about">About us</Link>
+        <a href="/about">About us</a> {/* 👈🏽 ✅ (1) Reload the page */}
       </p>
     </main>
   );
 }
 ```
 
+Notes:
 
+* Better have:
+[Store project filesoutside of `app`](https://nextjs.org/docs/app/getting-started/project-structure#store-project-files-outside-of-app)
 
+```
+second-app/
+├── app/
+│   ├── about/
+│   │   └── page.js
+│   ├── globals.css
+│   ├── icon.png
+│   ├── layout.js
+│   └── page.js
+├── components/       # 👈🏽 ✅ 🤔
+│   └── header.jsx    # 👈🏽 ✅
+├── public/
+│   └── logo.png
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── package-lock.json
+├── pnpm-lock.yaml
+├── yarn.lock
+├── README.md
+├── STEP_README.md
+└── tsconfig.json
+```
+
+* User can not go to [http://localhost:3000/component](http://localhost:3000/component). It does not exist.
+### 🐞 92.3 Issues:
+
+| Issue | Status | Log/Error |
+|---|---|---|
+| **Root Route Confusion** | ✅ Explained | Developers might think any file in `app` creates a route. Only `page.js` (and variants) creates a public URL. |
+| **Import Path Fragility** | ⚠️ Identified | Moving `header.jsx` from `app/components` to `/components` requires updating all import statements in components that use it. |
+| **Default Export Requirement** | ✅ Fixed | Custom components must be exported correctly (usually `default`) to be used in other files. |
+
+### 🧱 92.4 Pending Fixes (TODO)
+
+- [x] Refactor common header UI into a standalone `Header` component.
+- [ ] Implement absolute import aliases (e.g., `@/components/...`) in `tsconfig.json` to make moves easier.
+- [ ] Audit the `app` directory to ensure no non-routing files are accidentally using reserved names.
 
 
 ---
